@@ -5,14 +5,18 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import glob
+#import glob
+from glob import glob
 from moviepy.editor import VideoFileClip
 from collections import deque
 from sklearn.utils.linear_assignment_ import linear_assignment
 
-import helpers
+from helpers import *
+from detector import *
 import detector
-import tracker
+import helpers
+from tracker import Tracker
+import cv2
 
 # Global variables to be used by funcitons of VideoFileClop
 frame_count = 0 # frame counter
@@ -26,7 +30,7 @@ tracker_list =[] # list for trackers
 # list for track ID
 track_id_list= deque(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'])
 
-debug = True
+debug = False 
 
 def assign_detections_to_trackers(trackers, detections, iou_thrd = 0.3):
     '''
@@ -100,8 +104,13 @@ def pipeline(img):
     if debug: 
         for i in range(len(z_box)):
            img1= helpers.draw_box_label(img, z_box[i], box_color=(255, 0, 0))
-           plt.imshow(img1)
-        plt.show()
+           cv2.imshow("img: ", cv2.cvtColor(img1,cv2.COLOR_BGR2RGB))
+           k = cv2.waitKey(30000)
+           if k == 27:
+               cv2.destroyAllWindows()
+               break
+           #plt.imshow(img1)
+           #plt.show()
     
     if len(tracker_list) > 0:
         for trk in tracker_list:
@@ -193,19 +202,21 @@ if __name__ == "__main__":
     det = detector.CarDetector()
     
     if debug: # test on a sequence of images
-        images = [plt.imread(file) for file in glob.glob('./test_images/*.jpg')]
-        
-        for i in range(len(images))[0:7]:
+        images = [plt.imread(file) for file in sorted(glob('./test_images/*.jpg'))]
+        print("Flag debug") 
+        for i in range(len(images))[:]:
              image = images[i]
              image_box = pipeline(image)   
-             plt.imshow(image_box)
-             plt.show()
+             cv2.imshow("frame " + str(i) + " :", cv2.cvtColor(image_box,cv2.COLOR_BGR2RGB))
+             cv2.waitKey(30000)
+	     #plt.imshow(image_box)
+             #plt.show()
            
     else: # test on a video file.
         
         start=time.time()
-        output = 'test_v7.mp4'
-        clip1 = VideoFileClip("project_video.mp4")#.subclip(4,49) # The first 8 seconds doesn't have any cars...
+        output = '8_output.mp4'
+        clip1 = VideoFileClip("8.mp4")#.subclip(4,49) # The first 8 seconds doesn't have any cars...
         clip = clip1.fl_image(pipeline)
         clip.write_videofile(output, audio=False)
         end  = time.time()

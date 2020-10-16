@@ -7,7 +7,7 @@ import numpy as np
 from numpy import dot
 from scipy.linalg import inv, block_diag
 
-
+import cv2
 
 class Tracker(): # class for Kalman Filter-based tracker
     def __init__(self):
@@ -132,16 +132,25 @@ if __name__ == "__main__":
     plt.figure(figsize=(10, 14))
     helpers.draw_box_label(img, x_init_box, box_color=(0, 255, 0))
     ax = plt.subplot(3, 1, 1)
-    plt.imshow(img)
-    plt.title('Initial: '+str(x_init_box))
+    
+    cv2.imshow("img: ", cv2.cvtColor(img,cv2.COLOR_BGR2RGB))
+    k = cv2.waitKey(30000)
+    if k == 27:
+        cv2.destroyAllWindows()
     
     helpers.draw_box_label(img, z, box_color=(255, 0, 0))
     ax = plt.subplot(3, 1, 2)
-    plt.imshow(img)
-    plt.title('Measurement: '+str(z))
+    
+    
+    cv2.imshow("img: ", cv2.cvtColor(img,cv2.COLOR_BGR2RGB))
+    k = cv2.waitKey(30000)
+    if k == 27:
+        cv2.destroyAllWindows()
     
     helpers.draw_box_label(img, x_updated_box)
     ax = plt.subplot(3, 1, 3)
-    plt.imshow(img)
-    plt.title('Updated: '+str(x_updated_box))
-    plt.show()    
+
+    cv2.imshow("img: ", cv2.cvtColor(img,cv2.COLOR_BGR2RGB))
+    k = cv2.waitKey(30000)
+    if k == 27:
+        cv2.destroyAllWindows()
